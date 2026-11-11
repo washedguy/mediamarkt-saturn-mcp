@@ -111,6 +111,14 @@ class ClientTests(unittest.IsolatedAsyncioTestCase):
         with self.assertRaises(RetailerError):
             client._redirected_search(state, SimpleNamespace(url='https://example.com/de/campaign/example', text=response.text), 'abc', 1, [])
 
+    def test_product_links_ignore_tracking_and_external_urls(self):
+        from mediamarkt_mcp.shop.parsing import _ProductLinks
+        parser = _ProductLinks()
+        parser.feed('<a href="/de/product/_item-123.html?tracking=1#offer">Item</a>'
+                    '<a href="/de/product/_item-123.html?tracking=2">Duplicate</a>'
+                    '<a href="https://example.com/de/product/_other-456.html">External</a>')
+        self.assertEqual(parser.links, ['/de/product/_item-123.html'])
+
     def test_linked_offers_and_variants_are_distinct_and_incomplete(self):
         import json
         from pathlib import Path
@@ -126,6 +134,111 @@ class ClientTests(unittest.IsolatedAsyncioTestCase):
             {'productId': '100'}, {'productId': '101', 'variantValue': 'Black', 'product': {'__ref': 'GraphqlProduct:Media:de-DE:101'}}]}]}
         variants = _related_products(state, product, '100')
         self.assertEqual([item['product_id'] for item in variants], ['101'])
+
+    async def test_redirected_category_pagination_and_local_filters(self):
+        import json
+        from types import SimpleNamespace
+        state = {
+            'ROOT_QUERY': {'categoryV4:{}': {'paging': {'currentPage': 2, 'pageCount': 4, 'maxPage': 30}, 'totalProducts': 40}},
+            'CofrCoreFeature:Media:de:123': {'productName': 'Console', 'manufacturerName': 'TEST'},
+            'CofrPriceFeature:123': {'id': 'Media:de:123', 'price': {'amount': 50}},
+        }
+        body = 'window.__PRELOADED_STATE__ = ' + json.dumps({'apolloState': state})
+        body += '<a href="/de/product/_console-123.html">Console</a>'
+        session = AsyncMock()
+        session.get.side_effect = [
+            SimpleNamespace(status_code=200, url='https://www.mediamarkt.de/de/category/gaming-1.html?query=test', text=body),
+            SimpleNamespace(status_code=200, url='https://www.mediamarkt.de/de/category/gaming-1.html?page=2', text=body),
+        ]
+        manager = AsyncMock(); manager.__aenter__.return_value = session
+        with patch('mediamarkt_mcp.shop.http.AsyncSession', return_value=manager), patch('mediamarkt_mcp.shop.http.asyncio.sleep', new_callable=AsyncMock):
+            result = await Client().search('test', page=2, max_price=100)
+        self.assertEqual(result['coverage'], 'redirected_category')
+        self.assertEqual(result['next_page'], 3)
+        self.assertIsNone(result['total_products'])
+        self.assertEqual(result['local_filters'], ['currentprice:0-100'])
+        self.assertEqual(result['products'][0]['id'], '123')
+        self.assertEqual(session.get.await_args.args[0], 'https://www.mediamarkt.de/de/category/gaming-1.html?page=2')
+
+    def test_redirected_category_rejects_wrong_page(self):
+        from types import SimpleNamespace
+        state = {'ROOT_QUERY': {'categoryV4:{}': {'paging': {'currentPage': 1}}}}
+        response = SimpleNamespace(url='https://www.mediamarkt.de/de/category/gaming-1.html', text='')
+        with self.assertRaises(RetailerError):
+            Client()._redirected_search(state, response, 'test', 2, [])
+
+    def test_redirected_category_rejects_unverified_retailer_filters(self):
+        from types import SimpleNamespace
+        state = {'ROOT_QUERY': {'categoryV4:{"filters":["brand:OTHER"]}': {'paging': {'currentPage': 1}}}}
+        response = SimpleNamespace(url='https://www.mediamarkt.de/de/category/gaming-1.html', text='')
+        with self.assertRaises(RetailerError):
+            Client()._redirected_search(state, response, 'test', 1, [])
+
+    async def test_brand_and_offer_listings_preserve_their_identity(self):
+        import json
+        from types import SimpleNamespace
+        for path, key in [('/de/brand/apple/iphone', 'searchV4:{"filters":["brand:APPLE"],"query":"iphone_brand_shop"}'),
+                          ('/de/list/fernseher-angebote', 'searchV4:{"filters":[],"query":"fernseher angebote"}')]:
+            with self.subTest(path=path):
+                def body(page):
+                    state = {'ROOT_QUERY': {key: {'paging': {'currentPage': page, 'pageCount': 4}}},
+                             'CofrCoreFeature:Media:de:123': {'productName': 'Visible item'}}
+                    return 'window.__PRELOADED_STATE__ = ' + json.dumps({'apolloState': state}) + '<a href="/de/product/_item-123.html">Item</a>'
+                session = AsyncMock()
+                session.get.side_effect = [SimpleNamespace(status_code=200, url='https://www.mediamarkt.de' + path, text=body(1)),
+                                           SimpleNamespace(status_code=200, url='https://www.mediamarkt.de' + path + '?page=2', text=body(2))]
+                manager = AsyncMock(); manager.__aenter__.return_value = session
+                with patch('mediamarkt_mcp.shop.http.AsyncSession', return_value=manager), patch('mediamarkt_mcp.shop.http.asyncio.sleep', new_callable=AsyncMock):
+                    result = await Client().search('test', page=2, max_price=100)
+                self.assertEqual(result['coverage'], 'redirected_listing')
+                self.assertEqual(result['next_page'], 3)
+                self.assertIsNone(result['total_products'])
+                self.assertEqual(result['count'], 0)  # Missing price cannot match the local filter.
+
+    async def test_browse_brand_page_and_reject_unsafe_urls(self):
+        import json
+        from types import SimpleNamespace
+        state = {'ROOT_QUERY': {'searchV4:{"query":"iphone_brand_shop","filters":["brand:APPLE"]}':
+                                {'paging': {'currentPage': 1, 'pageCount': 2}}}}
+        response = SimpleNamespace(status_code=200, url='https://www.mediamarkt.de/de/brand/apple/iphone?page=1',
+                                   text='window.__PRELOADED_STATE__ = ' + json.dumps({'apolloState': state}) +
+                                   '<a href="/de/brand/apple/iphone/accessories">Accessories</a>'
+                                   '<a href="/de/brand/other">Other brand</a>')
+        session = AsyncMock(); session.get.return_value = response
+        manager = AsyncMock(); manager.__aenter__.return_value = session
+        with patch('mediamarkt_mcp.shop.http.AsyncSession', return_value=manager), patch('mediamarkt_mcp.shop.http.asyncio.sleep', new_callable=AsyncMock):
+            result = await Client().browse_page('https://www.mediamarkt.de/de/brand/apple/iphone')
+            self.assertEqual(result['related_pages'], ['https://www.mediamarkt.de/de/brand/apple/iphone/accessories'])
+            self.assertEqual(result['next_page'], 2)
+            for url in ['https://example.com/de/brand/apple', 'https://www.mediamarkt.de/de/brand/apple?filter=x',
+                        'https://www.mediamarkt.de/de/brand/%2e%2e/private']:
+                with self.assertRaises(RetailerError):
+                    await Client().browse_page(url)
+
+    async def test_browse_rejects_external_redirect_without_following(self):
+        from types import SimpleNamespace
+        session = AsyncMock()
+        session.get.return_value = SimpleNamespace(status_code=302, headers={'location': 'https://example.com/de/brand/apple'})
+        manager = AsyncMock(); manager.__aenter__.return_value = session
+        with patch('mediamarkt_mcp.shop.http.AsyncSession', return_value=manager), patch('mediamarkt_mcp.shop.http.asyncio.sleep', new_callable=AsyncMock):
+            with self.assertRaises(RetailerError):
+                await Client().browse_page('https://www.mediamarkt.de/de/brand/apple')
+        self.assertEqual(session.get.await_count, 1)
+        self.assertFalse(session.get.await_args.kwargs['allow_redirects'])
+
+    async def test_listing_page_with_changed_criteria_is_rejected(self):
+        import json
+        from types import SimpleNamespace
+        def body(query, page):
+            state = {'ROOT_QUERY': {f'searchV4:{{"query":"{query}"}}': {'paging': {'currentPage': page}}}}
+            return 'window.__PRELOADED_STATE__ = ' + json.dumps({'apolloState': state})
+        session = AsyncMock()
+        session.get.side_effect = [SimpleNamespace(status_code=200, url='https://www.mediamarkt.de/de/list/example', text=body('first', 1)),
+                                   SimpleNamespace(status_code=200, url='https://www.mediamarkt.de/de/list/example?page=2', text=body('other', 2))]
+        manager = AsyncMock(); manager.__aenter__.return_value = session
+        with patch('mediamarkt_mcp.shop.http.AsyncSession', return_value=manager), patch('mediamarkt_mcp.shop.http.asyncio.sleep', new_callable=AsyncMock):
+            with self.assertRaises(RetailerError):
+                await Client().search('test', page=2)
 
     def test_unknown_availability_is_not_unavailable(self):
         from mediamarkt_mcp.shop.parsing import _delivery

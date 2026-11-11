@@ -11,7 +11,7 @@ from .shop.config import DELIVERY_FILTERS
 from .shop.cache import cached_call
 
 mcp = StructuredMCPServer("mediamarkt-saturn", instructions=(
-    "Search MediaMarkt, MediaWorld and Saturn storefronts. Use list_storefronts to discover supported countries and shop languages. For marketplace offers or variants, use search_products with include_offers=true or get_product; embedded page offers can be incomplete. Use search_products to find product IDs and "
+    "Search MediaMarkt, MediaWorld and Saturn storefronts. Use list_storefronts to discover supported countries and shop languages. Use browse_page on related_pages returned by a brand hub. For marketplace offers or variants, use search_products with include_offers=true or get_product; embedded page offers can be incomplete. Use search_products to find product IDs and "
     "get_product to resolve exact product IDs or URLs and find_stores to find store IDs. Ask the user to choose when several stores match, then "
     "use check_pickup_availability for that store. Delivery is separate from pickup; "
     "unknown availability is not out of stock. Offers and variants are limited to data embedded on the product page. Prices and availability can change."
@@ -49,7 +49,7 @@ async def search_products(
     include_offers: Annotated[bool, Field(description="Fetch each product page to include linked variants and embedded marketplace offers. Slower; results are not exhaustive.")] = False,
     fresh: Annotated[bool, Field(description="Bypass the process cache and request current shop data.")] = False,
 ) -> SearchResult:
-    """Search the selected MediaMarkt, MediaWorld or Saturn storefront for product names, prices and home delivery. Search can return suggestions unrelated to the query; verify relevance. Redirected landing pages return only visible products with available data, may include unrelated products, and support local brand/price filters on visible products only, but not delivery filters or pagination. Set include_offers to inspect linked variants and embedded marketplace offers for each result; slower and not exhaustive. Use get_product for exact IDs or URLs. Returns pagination for more results."""
+    """Search the selected MediaMarkt, MediaWorld or Saturn storefront. Results and total_products may include products unrelated to the query, even for nonsense terms. Redirected category, brand or offer listings can be paginated when the retailer exposes a listing; its criteria may differ from the query. Other landing pages show only curated visible products and cannot be paginated. Brand and price filters apply locally per page on redirects; delivery filters are unavailable. Set include_offers to inspect embedded marketplace offers and variants; these may be incomplete. Use get_product for exact IDs or URLs."""
     if not query.strip():
         raise ToolError("[invalid_input] query must not be blank")
     if min_price is not None and max_price is not None and min_price > max_price:
@@ -83,6 +83,24 @@ async def search_products(
                 except RetailerError as exc:
                     item["enrichment_error"] = str(exc)
                     item["enrichment_error_code"] = exc.code
+        return SearchResult.model_validate(result)
+    except RetailerError as exc:
+        raise ToolError(f"[{exc.code}] {exc}") from exc
+
+@mcp.tool(structured_output=True)
+async def browse_page(
+    url: Annotated[str, Field(min_length=1, max_length=1000, description="Shop brand, category, list or campaign URL without query parameters or fragments, for example a related_pages URL from search_products.")],
+    retailer: Retailer = "mediamarkt",
+    country: Country = "de",
+    language: Language = None,
+    page: Annotated[int, Field(ge=1, le=30, description="Listing page, starting at 1; use next_page to continue.")] = 1,
+    fresh: Annotated[bool, Field(description="Bypass the process cache and request current shop data.")] = False,
+) -> SearchResult:
+    """Browse a brand, category, offer or campaign page. Brand hubs may expose related_pages to explore. A listing's criteria can differ from a keyword search; curated pages and embedded offers can be incomplete."""
+    try:
+        client = _client(retailer, country, language)
+        result = await cached_call("search", ("browse_page", retailer, country, language, url, page), fresh,
+                                   lambda: client.browse_page(url, page))
         return SearchResult.model_validate(result)
     except RetailerError as exc:
         raise ToolError(f"[{exc.code}] {exc}") from exc

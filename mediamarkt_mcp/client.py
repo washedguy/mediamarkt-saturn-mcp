@@ -33,6 +33,9 @@ class Client:
     async def search_page(self, query, page=1, filters=None):
         return await search_api.search_page(self, query, page, filters)
 
+    async def browse_page(self, url, page=1):
+        return await search_api.browse_page(self, url, page)
+
     def _redirected_search(self, state, response, query, page, filters):
         return search_api._redirected_search(self, state, response, query, page, filters)
 

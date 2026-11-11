@@ -53,6 +53,7 @@ class SearchResult(Observation):
     source: str
     coverage: str
     redirected_url: str | None = None
+    related_pages: list[str] | None = None
     local_filters: list[str] | None = None
     note: str | None = None
 

@@ -2,6 +2,7 @@
 import json
 import re
 from html.parser import HTMLParser
+from urllib.parse import urlsplit
 from .errors import RetailerError
 
 class _TextExtractor(HTMLParser):
@@ -36,8 +37,33 @@ class _ProductLinks(HTMLParser):
     def handle_starttag(self, tag, attrs):
         if tag == "a":
             href = dict(attrs).get("href") or ""
-            if re.fullmatch(r"/(?:de|fr|it|nl|es|pl|hu|tr)/product/[^/?#]+-\d+\.html", href) and href not in self.links:
-                self.links.append(href)
+            try:
+                parts = urlsplit(href)
+            except ValueError:
+                return
+            if (not parts.scheme and not parts.netloc
+                    and re.fullmatch(r"/(?:de|fr|it|nl|es|pl|hu|tr)/product/[^/?#]+-\d+\.html", parts.path)
+                    and parts.path not in self.links):
+                self.links.append(parts.path)
+
+
+class _BrandLinks(HTMLParser):
+    """Collect child pages of the current brand hub, not navigation links."""
+    def __init__(self, path):
+        super().__init__(convert_charrefs=True)
+        self.prefix = path.rstrip('/') + '/'
+        self.links = []
+
+    def handle_starttag(self, tag, attrs):
+        if tag != 'a':
+            return
+        try:
+            parts = urlsplit(dict(attrs).get('href') or '')
+        except ValueError:
+            return
+        if (not parts.scheme and not parts.netloc and parts.path.startswith(self.prefix)
+                and '..' not in parts.path.split('/') and parts.path not in self.links):
+            self.links.append(parts.path)
 
 
 def _plain_text(value):

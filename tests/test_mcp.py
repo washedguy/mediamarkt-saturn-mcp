@@ -21,12 +21,26 @@ class MCPTests(unittest.IsolatedAsyncioTestCase):
             factory.return_value.search = AsyncMock(return_value=result)
             async with MCPClient(mcp) as client:
                 tools = await client.list_tools()
-                self.assertEqual({tool.name for tool in tools.tools}, {"list_storefronts", "search_products", "get_product", "find_stores", "check_pickup_availability"})
+                self.assertEqual({tool.name for tool in tools.tools}, {"list_storefronts", "search_products", "browse_page", "get_product", "find_stores", "check_pickup_availability"})
                 self.assertTrue(all(tool.output_schema for tool in tools.tools))
                 response = await client.call_tool("search_products", {"query": "test", "retailer": "saturn"})
                 self.assertFalse(response.is_error)
                 self.assertEqual(response.structured_content["count"], 0)
                 self.assertIsNone(response.structured_content["next_page"])
+
+    async def test_browse_page_returns_related_pages_over_mcp(self):
+        url = 'https://www.mediamarkt.de/de/brand/apple'
+        result = {'retailer': 'mediamarkt', 'query': url, 'products': [], 'count': 0,
+                  'total_products': None, 'page': 1, 'next_page': None,
+                  'paging': {'current_page': 1, 'page_count': None, 'max_page': None},
+                  'source': 'redirected_page', 'coverage': 'partial_landing_page',
+                  'related_pages': [url + '/iphone']}
+        with patch('mediamarkt_mcp.server.Client') as factory:
+            factory.return_value.browse_page = AsyncMock(return_value=result)
+            async with MCPClient(mcp) as client:
+                response = await client.call_tool('browse_page', {'url': url, 'fresh': True})
+        self.assertFalse(response.is_error)
+        self.assertEqual(response.structured_content['related_pages'], [url + '/iphone'])
 
     async def test_bad_price_range_is_an_error(self):
         async with MCPClient(mcp) as client:

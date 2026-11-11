@@ -25,6 +25,7 @@ class FixtureTests(unittest.IsolatedAsyncioTestCase):
                 self.assertEqual(result['products'][0]['currency'], currency)
                 self.assertIsNotNone(result['products'][0]['price'])
                 self.assertEqual(result['country'], country)
+                self.assertIn('not a count of verified keyword matches', result['note'])
 
     def test_sanitized_live_marketplace_offer_snapshot(self):
         state = json.loads((FIXTURES / 'product_de_offers.json').read_text())

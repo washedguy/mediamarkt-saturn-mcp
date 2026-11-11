@@ -29,6 +29,7 @@ Restart your MCP client. If it cannot find `uvx`, use the absolute path to the `
 | --- | --- |
 | `list_storefronts` | List supported countries, shop languages, currencies, and delivery filters. |
 | `search_products` | Search by keyword, brand, price, and home delivery. Set `include_offers: true` to also fetch linked variants and marketplace offers. |
+| `browse_page` | Explore shop brand, category, offer and campaign pages, including `related_pages` from a brand hub. |
 | `get_product` | Get product details, variants, and marketplace offers by ID or URL. |
 | `find_stores` | Find stores by city, postal code, or name. |
 | `check_pickup_availability` | Check product IDs at a selected store. |
@@ -68,7 +69,7 @@ For a local checkout, you can instead copy `.env.example` to `.env`, edit it, an
 
 ## Notes
 
-- Search results and marketplace offers may be incomplete. Searches redirected to landing pages return only visible products with embedded data. Brand and price filters apply locally to this partial set; delivery filters and pagination remain unavailable.
+- Search results may include unrelated products, even for nonsense queries; `total_products` is the shop's count, not a verified match count. Marketplace offers may be incomplete. Redirects return visible products with embedded data. Category, brand and offer listings can be paginated when the shop exposes a listing; its criteria may differ from the search. Other landing pages show curated products and cannot be paginated. Brand and price filters apply locally; delivery filters are unavailable on redirects.
 - `include_offers` loads each product page, so it takes longer. Failed lookups include an `enrichment_error_code` on the affected product.
 - Availability is `available`, `unavailable`, `partial`, or `unknown`; original retailer values are retained. Pickup is not a reservation or exact stock count.
 - Results include `observed_at` and cache metadata. The process-local cache lasts 30 seconds for searches, 60 for products, 5 minutes for stores, and 10 seconds for pickup. Use `fresh: true` to bypass it. This does not bypass any retailer-side cache.
