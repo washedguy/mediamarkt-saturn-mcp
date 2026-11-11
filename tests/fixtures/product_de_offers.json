@@ -1,0 +1,85 @@
+{
+  "GraphqlProductMatch:3058718": {
+    "productId": "3058718",
+    "retailProductId": "3058718",
+    "marketplaceProductId": "184658993",
+    "marketplaceOffersV3({\"limit\":2})": [
+      {
+        "__ref": "GraphqlMarketplaceOfferV3:1875529333"
+      }
+    ],
+    "bestMarketplaceOffers": [
+      {
+        "__ref": "GraphqlMarketplaceOfferV3:1875529333"
+      }
+    ]
+  },
+  "GraphqlMarketplaceOfferV3:1875529333": {
+    "offerId": 1875529333,
+    "productId": "184658993",
+    "price": 96.8,
+    "currencyIsoCode": "EUR",
+    "sellerId": 4174,
+    "sellerName": "ejoker",
+    "sellerRating": 4.14,
+    "offerCondition": "NEW",
+    "deliveryOptions": [
+      {
+        "__typename": "GraphqlMarketplaceOfferDeliveryOptions",
+        "costAmount": 0,
+        "home": [
+          {
+            "__typename": "GraphqlMarketplaceHomeDeliveryVariant",
+            "name": "STANDARD",
+            "deliveryDates": [
+              {
+                "__typename": "GraphqlMarketplaceDeliveryDate",
+                "earliest": "2026-11-19T21:59:59.999Z",
+                "latest": "2026-11-23T21:59:59.999Z",
+                "validUntil": null
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "cofrProductAggregate({})": {
+      "__typename": "CofrProductAggregate",
+      "cofrCoreFeature": {
+        "__ref": "CofrCoreFeature:Media:de:184658993[1875529333]"
+      },
+      "cofrPriceFeature": {
+        "__ref": "CofrPriceFeature:{\"id\":\"Media:de:184658993[1875529333]\",\"price\":{\"installment\":{\"__typename\":null}}}"
+      },
+      "cofrOnlineStatusFeature": {
+        "__ref": "CofrOnlineStatusFeature:Media:de:184658993[1875529333]"
+      },
+      "cofrDeliveryFeature": {
+        "__ref": "CofrDeliveryFeature:Media:de:184658993[1875529333]"
+      },
+      "cofrPickupFeature": {
+        "__ref": "CofrPickupFeature:Media:de:184658993[1875529333]"
+      },
+      "cofrRefurbishedGoodsFeature": {
+        "__ref": "CofrRefurbishedGoodsFeature:Media:de:184658993[1875529333]"
+      }
+    },
+    "isBestOffer": true
+  },
+  "CofrDeliveryFeature:Media:de:184658993[1875529333]": {
+    "delivery": {
+      "__typename": "CofrDeliveryFeatureDelivery",
+      "deliveryStatus": "AVAILABLE_WITHIN_REASONABLE_TIME_FRAME",
+      "displayStatus": "AVAILABLE",
+      "isShippedFromStore": null,
+      "isZipCodeCheckNeeded": false,
+      "isDistanceBased": false,
+      "fulfillmentTime": {
+        "__typename": "CofrDeliveryFulfillmentTime",
+        "earliest": "2026-11-19T21:59:59.999Z",
+        "latest": "2026-11-23T21:59:59.999Z",
+        "validUntil": null
+      }
+    }
+  }
+}

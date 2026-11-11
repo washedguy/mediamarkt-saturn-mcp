@@ -1,0 +1,63 @@
+{
+  "url": "https://www.saturn.de/de/campaign/gta6",
+  "html": "<a href=\"/de/product/_grand-theft-auto-vi-playstation-5-3058717.html\">Product</a><a href=\"/de/product/_grand-theft-auto-vi-xbox-series-xors-3058718.html\">Product</a>",
+  "apolloState": {
+    "ROOT_QUERY": {},
+    "CofrCoreFeature:Saturn:de:3058717": {
+      "id": "Saturn:de:3058717",
+      "productName": "Grand Theft Auto VI [inkl. Poster] - [PlayStation 5]",
+      "manufacturerName": "ROCKSTAR GAMES"
+    },
+    "CofrPriceFeature:{\"id\":\"Saturn:de:3058717\",\"price\":{\"installment\":{\"__typename\":null}}}": {
+      "id": "Saturn:de:3058717",
+      "currency": "EUR",
+      "price": {
+        "amount": 79.99
+      }
+    },
+    "CofrDeliveryFeature:Saturn:de:3058717": {
+      "delivery": {
+        "__typename": "CofrDeliveryFeatureDelivery",
+        "deliveryStatus": "NOT_RELEASED",
+        "displayStatus": "PARTIALLY_AVAILABLE",
+        "isShippedFromStore": false,
+        "isZipCodeCheckNeeded": false,
+        "isDistanceBased": false,
+        "fulfillmentTime": {
+          "__typename": "CofrDeliveryFulfillmentTime",
+          "earliest": "2026-11-12T07:00:00.000Z",
+          "latest": "2026-11-13T17:00:00.000Z",
+          "validUntil": "2026-11-11T16:30:00.000Z"
+        }
+      }
+    },
+    "CofrCoreFeature:Saturn:de:3058718": {
+      "id": "Saturn:de:3058718",
+      "productName": "Grand Theft Auto VI [inkl. Poster] - [XBOX Series X]",
+      "manufacturerName": "ROCKSTAR GAMES"
+    },
+    "CofrPriceFeature:{\"id\":\"Saturn:de:3058718\",\"price\":{\"installment\":{\"__typename\":null}}}": {
+      "id": "Saturn:de:3058718",
+      "currency": "EUR",
+      "price": {
+        "amount": 79.99
+      }
+    },
+    "CofrDeliveryFeature:Saturn:de:3058718": {
+      "delivery": {
+        "__typename": "CofrDeliveryFeatureDelivery",
+        "deliveryStatus": "NOT_RELEASED",
+        "displayStatus": "PARTIALLY_AVAILABLE",
+        "isShippedFromStore": false,
+        "isZipCodeCheckNeeded": false,
+        "isDistanceBased": false,
+        "fulfillmentTime": {
+          "__typename": "CofrDeliveryFulfillmentTime",
+          "earliest": "2026-11-12T07:00:00.000Z",
+          "latest": "2026-11-13T17:00:00.000Z",
+          "validUntil": "2026-11-11T16:30:00.000Z"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,81 @@
+{
+  "apolloState": {
+    "ROOT_QUERY": {
+      "searchV4:{\"bypassStandardization\":false,\"filters\":[],\"hasMarketplace\":true,\"query\":\"Nintendo Switch\",\"searchExperiment\":null}": {
+        "totalProducts": 3749,
+        "paging": {
+          "__typename": "GraphqlSearchPaging",
+          "currentPage": 1,
+          "pageCount": 313,
+          "pageSize": 12,
+          "maxPage": 30
+        }
+      }
+    },
+    "GraphqlProduct:Media:de-DE:3069845": {
+      "id": "3069845",
+      "title": "NINTENDO Switch 2 Spielekonsole Schwarz ",
+      "manufacturer": "NINTENDO",
+      "url": "/de/product/_nintendo-switch-2-spielekonsole-schwarz-3069845.html"
+    },
+    "GraphqlProduct:Media:de-DE:3073179": {
+      "id": "3073179",
+      "title": "NINTENDO SWITCH 2 + MARIO KART WORLD",
+      "manufacturer": "NINTENDO",
+      "url": "/de/product/_nintendo-switch-2-mario-kart-world-3073179.html"
+    },
+    "CofrPriceFeature:{\"id\":\"Media:de:3069845\",\"price\":{\"installment\":{\"__typename\":\"CofrPriceFeaturePriceInstallment\"}}}": {
+      "id": "Media:de:3069845",
+      "currency": "EUR",
+      "price": {
+        "amount": 478.99
+      }
+    },
+    "CofrDeliveryFeature:Media:de:3069845": {
+      "delivery": {
+        "__typename": "CofrDeliveryFeatureDelivery",
+        "deliveryStatus": "AVAILABLE_WITHIN_REASONABLE_TIME_FRAME",
+        "displayStatus": "AVAILABLE",
+        "isShippedFromStore": false,
+        "isZipCodeCheckNeeded": false,
+        "isDistanceBased": false,
+        "fulfillmentTime": {
+          "__typename": "CofrDeliveryFulfillmentTime",
+          "earliest": "2026-11-12T07:00:00.000Z",
+          "latest": "2026-11-13T17:00:00.000Z",
+          "validUntil": "2026-11-11T19:15:00.000Z"
+        }
+      }
+    },
+    "CofrPriceFeature:{\"id\":\"Media:de:3073179\",\"price\":{\"installment\":{\"__typename\":\"CofrPriceFeaturePriceInstallment\"}}}": {
+      "id": "Media:de:3073179",
+      "currency": "EUR",
+      "price": {
+        "amount": 549.99
+      }
+    },
+    "CofrDeliveryFeature:Media:de:3073179": {
+      "delivery": {
+        "__typename": "CofrDeliveryFeatureDelivery",
+        "deliveryStatus": "AVAILABLE_WITHIN_REASONABLE_TIME_FRAME",
+        "displayStatus": "AVAILABLE",
+        "isShippedFromStore": false,
+        "isZipCodeCheckNeeded": false,
+        "isDistanceBased": false,
+        "fulfillmentTime": {
+          "__typename": "CofrDeliveryFulfillmentTime",
+          "earliest": "2026-11-12T07:00:00.000Z",
+          "latest": "2026-11-13T17:00:00.000Z",
+          "validUntil": "2026-11-11T16:30:00.000Z"
+        }
+      }
+    },
+    "CofrPriceFeature:{\"id\":\"Media:de:3069845\",\"price\":{\"installment\":{\"__typename\":null}}}": {
+      "id": "Media:de:3069845",
+      "currency": "EUR",
+      "price": {
+        "amount": 478.99
+      }
+    }
+  }
+}

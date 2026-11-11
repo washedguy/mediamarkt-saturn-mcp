@@ -1,0 +1,18 @@
+{
+  "GraphqlProductMatch:100": {
+    "productId": "100",
+    "marketplaceProductId": "200",
+    "marketplaceOffersV3({\"limit\":2})": [{"__ref": "GraphqlMarketplaceOfferV3:900"}],
+    "bestMarketplaceOffers": [{"__ref": "GraphqlMarketplaceOfferV3:900"}]
+  },
+  "GraphqlMarketplaceOfferV3:900": {
+    "offerId": 900, "productId": "200", "sellerId": 30,
+    "sellerName": "Example seller", "sellerRating": 4.2,
+    "price": 96.8, "currencyIsoCode": "EUR", "offerCondition": "NEW",
+    "deliveryOptions": [{"costAmount": 0}], "isBestOffer": true,
+    "cofrProductAggregate({})": {"cofrDeliveryFeature": {"__ref": "delivery"}}
+  },
+  "delivery": {"delivery": {"displayStatus": "AVAILABLE", "deliveryStatus": "AVAILABLE_SOON"}},
+  "GraphqlMarketplaceOfferV3:999": {"offerId": 999, "sellerName": "Unrelated"},
+  "GraphqlProduct:Media:de-DE:101": {"id": "101", "title": "Black edition", "url": "/de/product/_black-101.html"}
+}

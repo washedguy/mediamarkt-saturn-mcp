@@ -1,0 +1,74 @@
+{
+  "apolloState": {
+    "ROOT_QUERY": {
+      "searchV4:{\"bypassStandardization\":false,\"filters\":[],\"hasMarketplace\":true,\"query\":\"Nintendo Switch\",\"searchExperiment\":null}": {
+        "totalProducts": 1546,
+        "paging": {
+          "__typename": "GraphqlSearchPaging",
+          "currentPage": 1,
+          "pageCount": 129,
+          "pageSize": 12,
+          "maxPage": 30
+        }
+      }
+    },
+    "GraphqlProduct:Media:fr-CH:2295985": {
+      "id": "2295985",
+      "title": "NINTENDO SWITCH + MARIO KART WORLD 8 DELUXE /M",
+      "manufacturer": "NINTENDO",
+      "url": "/fr/product/_nintendo-switch-mario-kart-8-deluxe-bundle-spielekonsole-2295985.html"
+    },
+    "GraphqlProduct:Media:fr-CH:2277321": {
+      "id": "2277321",
+      "title": "NINTENDO Switch 2 Console, Gris",
+      "manufacturer": "NINTENDO",
+      "url": "/fr/product/_nintendo-switch-2-console-2277321.html"
+    },
+    "CofrPriceFeature:{\"id\":\"Media:fr:2295985\",\"price\":{\"installment\":{\"__typename\":\"CofrPriceFeaturePriceInstallment\"}}}": {
+      "id": "Media:fr:2295985",
+      "currency": "CHF",
+      "price": {
+        "amount": 199.95
+      }
+    },
+    "CofrDeliveryFeature:Media:fr:2295985": {
+      "delivery": {
+        "__typename": "CofrDeliveryFeatureDelivery",
+        "deliveryStatus": "AVAILABLE_WITHIN_REASONABLE_TIME_FRAME",
+        "displayStatus": "AVAILABLE",
+        "isShippedFromStore": true,
+        "isZipCodeCheckNeeded": false,
+        "isDistanceBased": false,
+        "fulfillmentTime": {
+          "__typename": "CofrDeliveryFulfillmentTime",
+          "earliest": "2026-11-12T07:00:00.000Z",
+          "latest": "2026-11-13T17:00:00.000Z",
+          "validUntil": "2026-11-11T17:00:00.000Z"
+        }
+      }
+    },
+    "CofrPriceFeature:{\"id\":\"Media:fr:2277321\",\"price\":{\"installment\":{\"__typename\":\"CofrPriceFeaturePriceInstallment\"}}}": {
+      "id": "Media:fr:2277321",
+      "currency": "CHF",
+      "price": {
+        "amount": 390.95
+      }
+    },
+    "CofrDeliveryFeature:Media:fr:2277321": {
+      "delivery": {
+        "__typename": "CofrDeliveryFeatureDelivery",
+        "deliveryStatus": "AVAILABLE_ON_NEXT_DAY",
+        "displayStatus": "AVAILABLE",
+        "isShippedFromStore": false,
+        "isZipCodeCheckNeeded": false,
+        "isDistanceBased": false,
+        "fulfillmentTime": {
+          "__typename": "CofrDeliveryFulfillmentTime",
+          "earliest": "2026-11-12T07:00:00.000Z",
+          "latest": "2026-11-12T20:00:00.000Z",
+          "validUntil": "2026-11-11T18:55:00.000Z"
+        }
+      }
+    }
+  }
+}

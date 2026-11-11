@@ -1,0 +1,24 @@
+[project]
+name = "mediamarkt-saturn-mcp"
+version = "3.0.0"
+description = "Request-based MCP server for MediaMarkt, MediaWorld and Saturn"
+requires-python = ">=3.11"
+dependencies = ["mcp>=2.3.0,<3", "curl-cffi>=0.17.0,<1"]
+
+[project.scripts]
+mediamarkt-saturn-mcp = "mediamarkt_mcp.server:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["mediamarkt_mcp"]
+
+[dependency-groups]
+dev = [
+    "ruff==0.17.4",
+]
+
+[tool.ruff.lint]
+select = ["E9", "F"]
