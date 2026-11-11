@@ -3,6 +3,7 @@ name = "mediamarkt-saturn-mcp"
 version = "3.0.0"
 description = "Request-based MCP server for MediaMarkt, MediaWorld and Saturn"
 requires-python = ">=3.11"
+license = "MIT"
 dependencies = ["mcp>=2.3.0,<3", "curl-cffi>=0.17.0,<1"]
 
 [project.scripts]

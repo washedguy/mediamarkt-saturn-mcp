@@ -4,32 +4,24 @@ Search products, compare prices, find stores, and check pickup availability at M
 
 ## Quick start
 
-Requires Python 3.11+ and [uv](https://docs.astral.sh/uv/getting-started/installation/).
-
-```bash
-uv sync --frozen
-uv run mediamarkt-saturn-mcp --config
-```
-
-Copy the generated JSON into your MCP client's configuration and restart the client. Merge the entry into `mcpServers` if the section already exists. Run `--config` again if you move the project or recreate the environment.
-
-<details>
-<summary>Example configuration</summary>
-
-Replace the path with the one printed by `--config`:
+Install [uv](https://docs.astral.sh/uv/getting-started/installation/) and add this to your MCP client configuration:
 
 ```json
 {
   "mcpServers": {
     "mediamarkt-saturn": {
-      "command": "/path/to/project/.venv/bin/python",
-      "args": ["-m", "mediamarkt_mcp.server"]
+      "command": "uvx",
+      "args": [
+        "--from",
+        "git+https://github.com/washedguy/mediamarkt-saturn-mcp",
+        "mediamarkt-saturn-mcp"
+      ]
     }
   }
 }
 ```
 
-</details>
+Restart your MCP client. If it cannot find `uvx`, use the absolute path to the `uvx` executable as `command`. If `mcpServers` already exists, add only the `mediamarkt-saturn` entry. To pin a specific revision, append `@<tag-or-commit>` to the Git URL.
 
 ## Tools
 
@@ -62,19 +54,17 @@ Prices use the storefront's local currency. `delivery_only` uses the shop's in-s
 
 ## Proxy (optional)
 
-Use the standard `HTTPS_PROXY` environment variable (or `ALL_PROXY` and `NO_PROXY`). HTTP, HTTPS, SOCKS5, SOCKS5h, and authenticated proxy URLs are supported.
+Set the standard `HTTPS_PROXY` environment variable in your MCP client configuration (or use `ALL_PROXY` and `NO_PROXY`):
 
-To keep credentials in a local `.env` file instead of your MCP client configuration:
-
-```bash
-cp .env.example .env
-# Edit .env and replace the example proxy URL
-uv run mediamarkt-saturn-mcp --config --env-file .env
+```json
+"env": {
+  "HTTPS_PROXY": "http://username:password@proxy.example.com:8080"
+}
 ```
 
-Copy the generated JSON into your MCP client. It uses `uv` to load the file at startup without placing credentials in the generated configuration. `.env` is ignored by Git. Percent-encode special characters in credentials (for example, `@` as `%40`). Existing environment variables take precedence over `.env` values.
+Add `env` beside `command` and `args` in the `mediamarkt-saturn` entry. HTTP, HTTPS, SOCKS5, SOCKS5h, and authenticated proxy URLs are supported. Percent-encode special characters in credentials (for example, `@` as `%40`).
 
-To check the proxy, run `uv run --env-file .env mediamarkt-saturn-mcp --check mediamarkt`. Alternatively, set `HTTPS_PROXY` directly in the MCP client's `env`. Remove any previous `MMS_PROXY` or `MMS_PROXY_FILE` settings and migrate to `HTTPS_PROXY`; requests fail until the legacy settings are removed.
+For a local checkout, you can instead copy `.env.example` to `.env`, edit it, and run `uv run mediamarkt-saturn-mcp --config --env-file .env`. The generated configuration loads the Git-ignored file using `uv` without including its contents. Existing environment variables take precedence. Remove previous `MMS_PROXY` or `MMS_PROXY_FILE` settings and migrate to `HTTPS_PROXY`; requests fail until the old settings are removed.
 
 ## Notes
 
@@ -87,9 +77,20 @@ To check the proxy, run `uv run --env-file .env mediamarkt-saturn-mcp --check me
 
 ## Development
 
-Shop requests live in `mediamarkt_mcp/shop/`, MCP response schemas in `mediamarkt_mcp/mcp_api/`, and tool registration in `mediamarkt_mcp/server.py`. Run `uv run ruff check mediamarkt_mcp tests` for lint checks. GitHub Actions tests Python 3.11–3.14 and verifies the built wheel.
+To work on the server locally (Python 3.11+):
+
+```bash
+git clone https://github.com/washedguy/mediamarkt-saturn-mcp.git
+cd mediamarkt-saturn-mcp
+uv sync --frozen
+uv run mediamarkt-saturn-mcp --config
+```
+
+Shop requests live in `mediamarkt_mcp/shop/`, response schemas in `mediamarkt_mcp/mcp_api/`, and tools in `mediamarkt_mcp/server.py`. Run `uv run ruff check mediamarkt_mcp tests` for lint checks. GitHub Actions tests Python 3.11–3.14 and verifies the built wheel.
 
 ## Diagnostics
+
+From a local checkout:
 
 ```bash
 uv run mediamarkt-saturn-mcp --check mediamarkt
@@ -98,3 +99,6 @@ uv run mediamarkt-saturn-mcp --check mediamarkt --country ch --language fr
 uv run python -m unittest discover -s tests -v
 ```
 
+## License
+
+[MIT](LICENSE)
