@@ -74,10 +74,13 @@ async def product(self, reference):
                 items.append({"name": item["name"], "value": item.get("value"), "unit": item.get("unit")})
         if items:
             features.append({"group": group.get("featureGroupName"), "items": items})
+    delivery_data = _delivery(delivery)
     details = {"id": product_id, "title": product.get("title"), "brand": product.get("manufacturer"),
         "price": (price.get("price") or {}).get("amount"), "currency": price.get("currency") or self.currency,
         "url": urljoin(self.base, product.get("url") or url), "resolved_url": url,
-        "delivery": _delivery(delivery),
+        "delivery": delivery_data,
+        "preorder": delivery_data.get("preorder", False),
+        "is_preorder": delivery_data.get("is_preorder", False),
         "ean": product.get("ean") or core.get("ean"), "variants": [{**v, "url": urljoin(self.base, v["url"]) if v["url"] else None} for v in _related_products(state, product, product_id)], "marketplace_offers": _marketplace_offers(state, self.sales_line, product_id), "offers_coverage": "embedded_page_only", "description": _plain_text(product.get("description")),
         "description_marketing": _plain_text(product.get("descriptionMarketing")), "images": images,
         "rating": {"average": stats.get("averageOverallRating"), "count": stats.get("totalReviewCount"), "scale": stats.get("overallRatingRange")},

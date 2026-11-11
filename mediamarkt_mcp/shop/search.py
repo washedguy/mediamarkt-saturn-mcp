@@ -117,7 +117,8 @@ async def search_page(self, query, page=1, filters=None):
             feature_id = f"{self.sales_line}:{self.language}:{pid}"
             price = state.get(f"CofrPriceFeature:{feature_id}") or next((value for key, value in state.items() if key.startswith("CofrPriceFeature:") and isinstance(value, dict) and value.get("id") == feature_id), {})
             delivery = (state.get(f"CofrDeliveryFeature:{feature_id}") or {}).get("delivery") or {}
-            products.append({"id": pid, "title": product.get("title"), "brand": product.get("manufacturer"), "price": (price.get("price") or {}).get("amount"), "currency": price.get("currency") or self.currency, "url": urljoin(self.base, product["url"]) if product.get("url") else None, "delivery": _delivery(delivery)})
+            delivery_data = _delivery(delivery)
+            products.append({"id": pid, "title": product.get("title"), "brand": product.get("manufacturer"), "price": (price.get("price") or {}).get("amount"), "currency": price.get("currency") or self.currency, "url": urljoin(self.base, product["url"]) if product.get("url") else None, "delivery": delivery_data, "preorder": delivery_data.get("preorder", False), "is_preorder": delivery_data.get("is_preorder", False)})
         if result.get("totalProducts", 0) and not products:
             raise ValueError("Search results contained no products")
         paging = result.get("paging") or {}
@@ -177,9 +178,10 @@ def _redirected_search(self, state, response, query, page, filters):
             continue
         price = state.get(f"CofrPriceFeature:{feature_id}") or next((v for k, v in state.items() if k.startswith("CofrPriceFeature:") and isinstance(v, dict) and v.get("id") == feature_id), {})
         delivery = (state.get(f"CofrDeliveryFeature:{feature_id}") or {}).get("delivery") or {}
+        delivery_data = _delivery(delivery)
         products.append({"id": pid, "title": title, "brand": core.get("manufacturerName") or graph.get("manufacturer"),
             "price": (price.get("price") or {}).get("amount"), "currency": price.get("currency") or self.currency,
-            "url": urljoin(self.base, href), "delivery": _delivery(delivery)})
+            "url": urljoin(self.base, href), "delivery": delivery_data, "preorder": delivery_data.get("preorder", False), "is_preorder": delivery_data.get("is_preorder", False)})
     for item in filters or []:
         field, value = item.split(":", 1)
         if field == "brand":

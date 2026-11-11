@@ -71,7 +71,7 @@ For a local checkout, you can instead copy `.env.example` to `.env`, edit it, an
 
 - Search results may include unrelated products, even for nonsense queries; `total_products` is the shop's count, not a verified match count. Marketplace offers may be incomplete. Redirects return visible products with embedded data. Category, brand and offer listings can be paginated when the shop exposes a listing; its criteria may differ from the search. Other landing pages show curated products and cannot be paginated. Brand and price filters apply locally; delivery filters are unavailable on redirects.
 - `include_offers` loads each product page, so it takes longer. Failed lookups include an `enrichment_error_code` on the affected product.
-- Availability is `available`, `unavailable`, `partial`, or `unknown`; original retailer values are retained. Pickup is not a reservation or exact stock count.
+- Availability is `available`, `unavailable`, `partial`, `preorder`, or `unknown`; original retailer values are retained. Pickup is not a reservation or exact stock count.
 - Results include `observed_at` and cache metadata. The process-local cache lasts 30 seconds for searches, 60 for products, 5 minutes for stores, and 10 seconds for pickup. Use `fresh: true` to bypass it. This does not bypass any retailer-side cache.
 - Tool failures keep MCP `is_error: true` and include `structured_content.error.code` and `message` (for example `blocked`, `rate_limited`, `network_error`, or `retailer_changed`).
 - This is an unofficial integration. Shop interfaces and access restrictions can change.

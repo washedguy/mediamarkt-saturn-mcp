@@ -85,6 +85,11 @@ def _apollo_state(text):
         raise RetailerError("Could not parse the retailer's embedded product data.") from exc
 
 
+def _is_preorder(raw_status, retailer_code):
+    values = " ".join(str(value or "") for value in (raw_status, retailer_code)).upper()
+    return any(token in values for token in ("NOT_RELEASED", "PREORDER", "PRE_ORDER", "PRE-ORDER", "VORBESTELL"))
+
+
 def _availability(raw):
     # Preserve the shop's status separately; never infer unknown values as unavailable.
     return {"AVAILABLE": "available", "NOT_AVAILABLE": "unavailable", "PARTIALLY_AVAILABLE": "partial"}.get(raw, "unknown")
@@ -93,9 +98,14 @@ def _availability(raw):
 def _delivery(data):
     data = data or {}
     raw = data.get("displayStatus")
-    return {"status": _availability(raw), "retailer_status": raw,
-            "retailer_code": data.get("deliveryStatus"),
-            "earliest": (data.get("fulfillmentTime") or {}).get("earliest")}
+    code = data.get("deliveryStatus")
+    preorder = _is_preorder(raw, code)
+    status = "preorder" if preorder else _availability(raw)
+    return {"status": status, "retailer_status": raw,
+            "retailer_code": code,
+            "earliest": (data.get("fulfillmentTime") or {}).get("earliest"),
+            "preorder": preorder,
+            "is_preorder": preorder}
 
 
 def _ref(state, value):

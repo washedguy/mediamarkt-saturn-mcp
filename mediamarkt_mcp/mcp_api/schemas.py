@@ -13,7 +13,9 @@ class Observation(BaseModel):
     cache: CacheInfo | None = None
 
 class Delivery(BaseModel):
-    status: Literal["available", "unavailable", "partial", "unknown"]
+    status: Literal["available", "unavailable", "partial", "preorder", "unknown"]
+    preorder: bool | None = None
+    is_preorder: bool | None = None
     retailer_status: str | None
     retailer_code: str | None
     earliest: str | None
@@ -26,6 +28,8 @@ class Product(BaseModel):
     currency: str
     url: str | None
     delivery: Delivery
+    preorder: bool | None = None
+    is_preorder: bool | None = None
     variants: list["Variant"] | None = None
     marketplace_offers: list["Offer"] | None = None
     offers_coverage: str | None = None
@@ -145,7 +149,7 @@ class StoreResult(Observation):
 
 class PickupItem(BaseModel):
     product_id: str
-    status: Literal["available", "unavailable", "partial", "unknown"]
+    status: Literal["available", "unavailable", "partial", "preorder", "unknown"]
     retailer_status: str | None
     retailer_code: str | None
     earliest: str | None
