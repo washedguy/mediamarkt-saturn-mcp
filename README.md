@@ -73,7 +73,7 @@ Run `uv run python -m unittest discover -s tests -v` for tests and `uv run ruff 
 
 ## Author
 
-Built by Jan Herklotz at [washed.dev](https://washed.dev) — websites and web apps from Wiesbaden. Have a project in mind? [Get in touch](mailto:hello@washed.dev).
+**[washed.dev](https://washed.dev)** · Building websites and web apps for your business
 
 ## License
 
