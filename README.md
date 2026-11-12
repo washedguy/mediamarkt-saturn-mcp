@@ -71,6 +71,10 @@ uv run mediamarkt-saturn-mcp --config
 
 Run `uv run python -m unittest discover -s tests -v` for tests and `uv run ruff check mediamarkt_mcp tests` for linting.
 
+## Author
+
+Built by Jan Herklotz at [washed.dev](https://washed.dev) — websites and web apps from Wiesbaden. Have a project in mind? [Get in touch](mailto:hello@washed.dev).
+
 ## License
 
 [MIT](LICENSE)
